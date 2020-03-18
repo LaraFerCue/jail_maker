@@ -61,4 +61,25 @@ update_base_jail: .PHONY .SILENT .IGNORE
 		-b ${JAIL_BASEPATH}/${JAIL_VERSION} fetch
 	freebsd-update --currently-running ${JAIL_VERSION} \
 		-b ${JAIL_BASEPATH}/${JAIL_VERSION} install
+
+create_jail: base_jail ${JAIL_BASEPATH}/${JAIL_NAME} jail.conf .PHONY
+
+/etc/jail.conf:
+	install ${SRCDIR}/templates/jail.conf ${@}
+	echo "\$$basepath = \"${JAIL_BASEPATH}\";" >> ${@}
+
+jail.conf: /etc/jail.conf ${JAIL_BASEPATH}/${JAIL_NAME}/etc/jail.conf .PHONY
+	if ! grep -qE '^${JAIL_NAME}[[:space:]]' /etc/jail.conf ; then \
+		cat ${JAIL_BASEPATH}/${JAIL_NAME}/etc/jail.conf >>\
+			/etc/jail.conf ; \
+	fi
+
+${JAIL_BASEPATH}/${JAIL_NAME}/etc/jail.conf:
+	echo "${JAIL_NAME} {" > ${@}
+	echo "  osrelease = \"${JAIL_VERSION}\";" >> ${@}
+	echo "  vnet;" >> ${@}
+	echo "  vnet.interface = \"\$${name}1\";" >> ${@}
+	echo "}" >> ${@}
+
+
 .endif # ! target(__bsd.jails.mk__)
