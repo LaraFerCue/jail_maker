@@ -31,9 +31,9 @@ FTP_PATH?=	pub/FreeBSD/releases/${ARCH}/${ARCH}
 
 TARBALLS_PATH=	${JAIL_BASEPATH}/tarballs/${JAIL_VERSION}
 
-fetch: ${TARBALLS_PATH}/base.txz ${TARBALLS_PATH}/lib32.txz .PHONY
+fetch: ${TARBALLS_PATH} ${TARBALLS_PATH}/base.txz ${TARBALLS_PATH}/lib32.txz .PHONY
 
-${TARBALLS_PATH}/base.txz ${TARBALLS_PATH}/lib32.txz: ${TARBALLS_PATH} .META
+${TARBALLS_PATH}/base.txz ${TARBALLS_PATH}/lib32.txz: .META
 	fetch -o ${@} ${FTP_SERVER}/${FTP_PATH}/${JAIL_VERSION}/${@:T}
 
 ${TARBALLS_PATH}: ${JAIL_BASEPATH}/tarballs
